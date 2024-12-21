@@ -1,0 +1,260 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reconnaissance Vocale</title>
+    <style>
+        body {
+            background-image:url('{% static  "image/backgroun.png" %}');
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            background-size: cover;
+            width: 100%;
+            overflow: hidden;
+        }
+        * {
+            box-sizing: border-box;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            color: white;
+        }
+        header {
+            height: 60px;
+            width: 100%;
+            background: linear-gradient(90deg, rgba(142,141,143,1) 0%, rgba(130,130,132,1) 10%, rgba(166,166,168,0.5) 35%, rgba(183,190,191,1) 100%);
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+        }
+        header div.logo {
+            flex-basis: 70%;
+            display: flex;
+            justify-content: space-between;
+            margin-left: 20px;
+        }
+        header nav {
+            flex-basis: 25%;
+        }
+        header nav ul {
+            display: flex;
+            justify-content: space-around;
+        }
+        main {
+            position: relative;
+        }
+        .upload-container {
+            margin: 31px;
+            text-align: center;
+            position: relative;
+        }
+        .upload-label {
+            cursor: pointer;
+            display: inline-block;
+        }
+        h1 {
+            color:#084480;
+            font-size: 46px;
+            font-weight: 900;
+        }
+        .upload-box {
+            border: 2px dashed #ccc;
+            padding: 30px;
+            background-color: #e0e0e0;
+            width: 300px;
+            height: 150px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .upload-icon {
+            font-size: 36px;
+            color: #555;
+            margin-bottom: 10px;
+        }
+        #upload-text {
+            color: #333;
+            font-size: 16px;
+        }
+        .file-upload {
+            display: none;
+        }
+        .message {
+            position: absolute;
+            top: 69%;
+            box-shadow: 0px 0px 10px 2px #ccc, 0px 0px 20px 2px #ccc;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #084480;
+            color: #333;
+            height: 75%;
+            width: 462px;;
+            z-index: 123;
+            display: flex;
+            flex-wrap: wrap;
+            display: none;
+        }
+        
+        .message * {
+            width: 100%;
+            text-align: center;
+        }
+        .message span.m{
+            height: 20%;
+            font-size: 27px;
+            font-weight: 900;
+        }
+        .message button.m{
+            height: 20%;
+           
+        }
+        .message div.m{
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 60%
+        }
+        .message.ok h3, .message.ok span {
+            color: rgb(33, 189, 33);
+        }
+        .erreur h3, .erreur span {
+            color: red;
+        }
+        .erreur button {
+            background-color: red;
+            border: none;
+            outline: none;
+            background-color: red;
+        }
+        button.ok {
+            background-color: rgb(33, 189, 33);
+            border: none;
+            outline: none;
+            padding: 10px 20px;
+            position: relative;
+            left: 50%;
+            transform: translateX(-50%);
+            top: -8px;
+            border-radius: 10px 10px;
+            box-shadow: 0px 0 7px 8px #a8a6a6, 0px 0 0 5px #a8a6a6, 0px 0 0 2px #a8a6a6;
+            display: none;
+        }
+
+        .button1 {
+            margin-top: 10px;
+            padding: 15px 30px;
+            background-color: chartreuse;
+        }
+        .logo img {
+            width: 40px;
+            margin: 0px 27px;
+        }
+        a {
+            text-decoration: none;
+            color: rgba(0, 255, 251, 0.858);
+        }
+        li {
+            padding: 10px 15px;
+            font-size: 20px;
+            text-decoration-line: none;
+            background-color: #555;
+            
+        }
+        #audio{
+            visibility: hidden;
+            margin: 23px 0px -23px 0px;
+        }
+        .button{
+            background-color: #068758;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo"><img src="{% static 'image/logo1.png' %}" alt="">
+            <img src="{% static 'image/logo2.png' %}" alt="">
+        </div>
+        <nav>
+            <ul>
+                <li><a href="{% url 'index' %}">home</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <h1 align="center">Bienvenue sur cette page web de Reconnaissance Vocale</h1>
+
+        <!-- Exemple de lecteur audio intégré -->
+        <div class="upload-container">
+            <h2 style="color: #000; visibility: hidden;" id="audio1">Écoutez votre audio</h2>
+            <!-- Ici, nous affichons un lecteur audio -->
+            <audio controls id="audio">
+                <source  type="audio/mpeg">
+                Votre navigateur ne prend pas en charge l'élément audio.
+            </audio>
+        
+
+        <form action="genre" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="upload-container">
+                <label for="file-upload" class="upload-label">
+                    <div class="upload-box">
+                        <div class="upload-icon">&#8595;</div>
+                        <span id="upload-text">Choose a file or drag it here</span>
+                    </div>
+                </label>
+                <input type="file" id="file-upload" name="file-upload" class="file-upload" accept="audio/*" onchange="displayFileName()">
+                
+            </div>
+            <button class="ok" type="submit" id="ok">Gérer genre de cet audio</button>
+        </form>
+        <div class="erreur message" id="erreur" >
+            <span>X</span>
+            <div><h3>Erreur</h3>il doit choiser un audio </div>
+            <button class="button"  type="reset" onclick="document.getElementById('erreur').style.display='none';">OK</button>
+        </div>
+        <div class="genre message" id="genre" {% if audio == 1 %} style="display:flex;" {% else %}  style="display:none;" {% endif %}>
+            <span class="m">message</span>
+            <div class="m"><h3>{{genre}}</h3></div>
+            <button class="button m" type="reset" onclick="document.getElementById('genre').style.display='none';">OK</button>
+        </div>
+        </div>
+
+        <script>
+            function displayFileName() {
+                var input = document.getElementById('file-upload');
+                var file = input.files[0];
+        
+                // Vérifier si le fichier est un fichier audio
+                if (file && file.type.startsWith('audio/')) {
+                    var fileName = file.name;
+                    document.getElementById('upload-text').textContent = fileName;
+        
+                    // Afficher le bouton "OK" pour soumettre le formulaire
+                    document.getElementById('ok').style.display = "block";
+        
+                    // Mettre à jour la source du lecteur audio avec le fichier sélectionné
+                    var audio = document.getElementById('audio');
+                    var audio1 =document.getElementById('audio1')
+                    
+                    var audioURL = URL.createObjectURL(file);  // Créer une URL temporaire pour le fichier audio
+                    audio.src = audioURL;  // Définir la source du lecteur audio
+                    audio.style.visibility = "visible";  // Afficher le lecteur audio
+                    audio.load();  // Recharger le fichier audio pour qu'il soit prêt à être joué
+                    audio1.style.visibility="visible"
+                } else {
+                    // Si ce n'est pas un fichier audio, masquer le lecteur et le bouton "OK"
+                    document.getElementById('erreur').style.display='flex'
+                    document.getElementById('audio').style.visibility = "hidden";
+                    document.getElementById('audio1').style.visibility = "hidden";
+                    
+                    document.getElementById('ok').style.display = "none";
+                }
+            }
+        </script>
+        
+    </main>
+</body>
+</html>
